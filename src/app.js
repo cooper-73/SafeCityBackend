@@ -10,13 +10,8 @@ require('./database');
 app.set('port', process.env.PORT || 8080);
 
 //Importing routes
-// const termsRouter = require('./routes/terms');
-// const coursesRouter = require('./routes/courses');
-// const escuelasRouter = require('./routes/escuelas');
-// const gradesRouter = require('./routes/grades');
-// const questionRouter = require('./routes/questions');
-// const taskRouter = require('./routes/agenda');
-// const resourcesRouter = require('./routes/resources');
+const incidentRouter = require('./routes/incident');
+const reportRouter = require('./routes/report');
 const userRouter = require('./routes/user');
 
 //Middlewares
@@ -25,13 +20,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 //Routes
-// app.use('/resources',resourcesRouter);
-// app.use('/terms', termsRouter);
-// app.use('/courses', coursesRouter);
-// app.use('/escuelas', escuelasRouter);
-// app.use('/grades', gradesRouter);
-// app.use('/question', questionRouter);
-// app.use('/agenda',taskRouter);
+app.use('/incident', userRouter);
+app.use('/report', userRouter);
 app.use('/user', userRouter);
 
 //Start the server

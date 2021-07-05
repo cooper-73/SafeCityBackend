@@ -8,15 +8,18 @@ const user = new Schema({
     },
     dni: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     phone: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password:  {
         type: String,
@@ -28,7 +31,8 @@ const user = new Schema({
     },
     emergencyContacts: {
         type: Object,
-        default: null
+        default: null,
+        ref: 'user'
     },
     photo: {
         type: Object,
