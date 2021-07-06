@@ -11,3 +11,4 @@ const connectionParams = {
 mongoose.connect(url,connectionParams)
     .then(db => console.log('DB is connected'))
     .catch(err => console.error(err));
+

@@ -1,44 +1,68 @@
 const router = require("express").Router();
+const passport = require("passport");
 const User = require("../models/user");
 
+//require('../app')
+
+
 // const user = new Schema({
-//     name: {
-//         type: String,
-//         required: true
-//     },
-//     dni: {
-//         type: String,
-//         required: true
-//     },
-//     phone: {
-//         type: String,
-//         required: true
-//     },
-//     email: {
-//         type: String,
-//         required: true
-//     },
-//     password:  {
-//         type: String,
-//         required: true
-//     },
-//     currentLocation: {
-//         type: Object,
-//         default: null
-//     },
-//     emergencyContacts: {
-//         type: Object,
-//         default: null
-//     },
-//     photo: {
-//         type: Object,
-//         default: null
-//     },
-//     reports: {
-//         type: Object,
-//         default: null
-//     },
+//   username: {
+//       type: String,
+//       required: true
+//   },
+//   dni: {
+//       type: String,
+//       required: true,
+//       unique: true
+//   },
+//   phone: {
+//       type: String,
+//       required: true,
+//       unique: true
+//   },
+//   email: {
+//       type: String,
+//       required: true,
+//       unique: true
+//   },
+//   currentLocation: {
+//       type: Object,
+//       default: null
+//   },
+//   emergencyContacts: {
+//       type: Object,
+//       default: null,
+//       ref: 'user'
+//   },
+//   photo: {
+//       type: Object,
+//       default: null
+//   },
+//   reports: {
+//       type: Object,
+//       default: null
+//   },
 // });
+
+
+router.post("/register",(req,res)=>{
+  
+  const {username,dni,phone,email,password} = req.body
+  User.register(new User({username,dni,phone,email}),password,
+  function(err,user){
+    if(err){
+      console.log(err)
+    }
+    else{
+      passport.authenticate("local")
+      console.log("usuario registrado")
+    }
+  })
+})
+
+router.post("/login", passport.authenticate("local"),(req,res)=>{
+  console.log("login correcto")
+})
 
 // Get Emergency Contacts
 // Parameters: Id of user
@@ -52,5 +76,9 @@ router.get("/:id", async (req, res) => {
     })
     .catch((err) => res.status(500).json("Error: " + err));
 });
+
+
+
+
 
 module.exports = router;
