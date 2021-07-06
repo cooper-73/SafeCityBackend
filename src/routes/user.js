@@ -44,7 +44,11 @@ const User = require("../models/user");
 //   },
 // });
 
-
+/*
+Perform basic register
+Parameters: username,dni,phone,email,password
+Return: if is correct return code 200, else return 400; 
+*/
 router.post("/register",(req,res)=>{
   
   const {username,dni,phone,email,password} = req.body
@@ -52,17 +56,27 @@ router.post("/register",(req,res)=>{
   function(err,user){
     if(err){
       console.log(err)
+      res.status(400).send()
     }
     else{
       passport.authenticate("local")
       console.log("usuario registrado")
+      res.status(200).send()
     }
   })
 })
+/* 
+Perform login
+Paramters:username, password
+if correct perform callback and return code 200 and all the user information
+else on error return by default code 401
+*/
 
 router.post("/login", passport.authenticate("local"),(req,res)=>{
   console.log("login correcto")
+  res.status(200).send(JSON.stringify(req.user))
 })
+
 
 // Get Emergency Contacts
 // Parameters: Id of user
