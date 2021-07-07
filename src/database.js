@@ -5,7 +5,8 @@ const url = `mongodb+srv://cooper73:cooper73@cluster0.ma4no.mongodb.net/SafeCity
 const connectionParams = {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useUnifiedTopology: true 
+    useUnifiedTopology: true,
+    useFindAndModify: false
 }
 
 mongoose.connect(url,connectionParams)

@@ -6,13 +6,11 @@ const expressSession = require('express-session')
 const passport = require('passport')
 const user = require("./models/user")
 const LocalStrategy   = require('passport-local');
+
+
 //Initializations
 const app = express();
 require('./database');
-
-
-
-
 
 //Settings
 app.set('port', process.env.PORT || 8080);

@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 passportLocalMongoose   =   require('passport-local-mongoose');
 
+const Contact = {
+    name: String,
+    phone: String,
+    photo: Object
+}
+
 const user = new Schema({
     username: {
         type: String,
@@ -27,9 +33,8 @@ const user = new Schema({
         default: null
     },
     emergencyContacts: {
-        type: Object,
-        default: null,
-        ref: 'user'
+        type: [Contact],
+        default: [],
     },
     photo: {
         type: Object,
