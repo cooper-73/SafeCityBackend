@@ -5,7 +5,7 @@ const User = require("../models/user");
 //require('../app')
 
 // const user = new Schema({
-//   username: {
+//   name: {
 //       type: String,
 //       required: true
 //   },
@@ -45,13 +45,15 @@ const User = require("../models/user");
 
 /*
 Perform basic register
-Parameters: username,dni,phone,email,password
+Parameters: name,dni,phone,email,password
 Return: if is correct return code 200, else return 400; 
 */
 router.post("/register", (req, res) => {
-  const { username, dni, phone, email, password } = req.body;
+  const { name
+  , dni, phone, email, password } = req.body;
   User.register(
-    new User({ username, dni, phone, email }),
+    new User({ name
+    , dni, phone, email }),
     password,
     function (err, user) {
       if (err) {
@@ -67,7 +69,7 @@ router.post("/register", (req, res) => {
 });
 /* 
 Perform login
-Paramters:username, password
+Paramters:name, password
 if correct perform callback and return code 200 and all the user information
 else on error return by default code 401
 */
@@ -77,29 +79,31 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send(JSON.stringify(req.user));
 });
 
+
+// Update User's Profile
+// Parameters: Id of user
+// Body: User's profile changes
+// Returns: Message of the process
+router.put("/profile/:id", async (req, res) => {
+  let user_id = req.params.id;
+  let new_profile_info = req.body;
+  await User.findByIdAndUpdate(user_id, new_profile_info)
+    .then((result) => {
+      res.status(200).json({ msg: "Perfil actualizado" });
+    })
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
+
+
 // Post Emergency Contacts
 // Parameters: -
 // Req: User id, contact_name, contact_phone
 // Returns: Array of emergency contacts of user
-router.post("/emergencyContacts/", async (req, res) => {
+router.post("/emergency_contacts/", async (req, res) => {
   let user_id = req.body.id;
   let contact_name = req.body.contact_name;
   let contact_phone = req.body.contact_phone;
-  let preexistent_contact = false;
   let newContact;
-  await User.findById(user_id, "emergencyContacts")
-    .then((result) => {
-      let contacts = result.emergencyContacts;
-      console.log(contacts);
-      contacts.forEach((contact) => {
-        if (contact.phone == contact_phone) preexistent_contact = true;
-      });
-      if (preexistent_contact) {
-        res.status(200).json({ msg: "Contacto existente" });
-      }
-    })
-    .catch((err) => res.status(500).json({ err: err.toString() }));
-  if (!preexistent_contact) return;
   await User.findOne({ phone: contact_name }, "photo")
     .then((contact_photo) => {
       newContact = {
@@ -119,7 +123,7 @@ router.post("/emergencyContacts/", async (req, res) => {
 // Get Emergency Contacts
 // Parameters: Id of user
 // Returns: Array of emergency contacts of user
-router.get("/emergencyContacts/:id", async (req, res) => {
+router.get("/emergency_contacts/:id", async (req, res) => {
   let user_id = req.params.id;
   await User.findOne({ _id: user_id }, "emergencyContacts")
     .then((result) => {
@@ -132,7 +136,7 @@ router.get("/emergencyContacts/:id", async (req, res) => {
 // Parameters: Id of user
 // Body: Phone of emergency contact to be dropped
 // Returns: Message of the process
-router.put("/delete_emergencyContacts/:id", async (req, res) => {
+router.put("/delete_emergency_contacts/:id", async (req, res) => {
   let user_id = req.params.id;
   let contact_phone = req.body.contact_phone;
   await User.findByIdAndUpdate(user_id, {$pull: {emergencyContacts:{ phone: contact_phone}}})
@@ -142,5 +146,7 @@ router.put("/delete_emergencyContacts/:id", async (req, res) => {
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
+
+
 
 module.exports = router;

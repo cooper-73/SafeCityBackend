@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 passportLocalMongoose   =   require('passport-local-mongoose');
 
-const Contact = {
-    name: String,
-    phone: String,
-    photo: Object
-}
+// const Contact = {
+//     name: String,
+//     phone: String,
+//     photo: Object
+// }
 
 const user = new Schema({
-    username: {
+    name: {
         type: String,
         required: true
     },
@@ -33,7 +33,7 @@ const user = new Schema({
         default: null
     },
     emergencyContacts: {
-        type: [Contact],
+        type: Array,
         default: [],
     },
     photo: {
@@ -41,9 +41,10 @@ const user = new Schema({
         default: null
     },
     reports: {
-        type: Object,
-        default: null
-    },
+        type: Array,
+        default: []
+        // Array with report_id created
+    }
 });
 user.plugin(passportLocalMongoose)
 
