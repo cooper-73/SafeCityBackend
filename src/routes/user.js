@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 const User = require("../models/user");
+const Report = require("../models/report");
 
 //require('../app')
 
@@ -41,6 +42,10 @@ const User = require("../models/user");
 //       type: Object,
 //       default: null
 //   },
+//   attending_locations: {
+//     type: Array,
+//     default: []
+// }
 // });
 
 /*
@@ -49,11 +54,9 @@ Parameters: name,dni,phone,email,password
 Return: if is correct return code 200, else return 400; 
 */
 router.post("/register", (req, res) => {
-  const { name
-  , dni, phone, email, password } = req.body;
+  const { name, dni, phone, email, password } = req.body;
   User.register(
-    new User({ name
-    , dni, phone, email }),
+    new User({ name, dni, phone, email }),
     password,
     function (err, user) {
       if (err) {
@@ -79,7 +82,6 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send(JSON.stringify(req.user));
 });
 
-
 // Update User's Profile
 // Parameters: Id of user
 // Body: User's profile changes
@@ -93,7 +95,6 @@ router.put("/profile/:id", async (req, res) => {
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
-
 
 // Post Emergency Contacts
 // Parameters: -
@@ -139,14 +140,61 @@ router.get("/emergency_contacts/:id", async (req, res) => {
 router.put("/delete_emergency_contacts/:id", async (req, res) => {
   let user_id = req.params.id;
   let contact_phone = req.body.contact_phone;
-  await User.findByIdAndUpdate(user_id, {$pull: {emergencyContacts:{ phone: contact_phone}}})
+  await User.findByIdAndUpdate(user_id, {
+    $pull: { emergencyContacts: { phone: contact_phone } },
+  })
     .then((result) => {
-      console.log(result)
       res.status(200).json({ msg: "Contacto eliminado" });
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
 
+// Get reports sent to the user
+// Parameters: Id of user
+// Body: -
+// Returns: Array with the last 20 reports sent to the user within last 7 days
+router.get("/received_reports/:id", async (req, res) => {
+  let user_id = req.params.id;
+  let received_reports = [];
+  await User.findById(user_id)
+    .then((user) => {
+      received_reports = user.reports;
+    })
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+  await Report.find({ _id: { $in: received_reports } })
+    .then((result) => res.status(200).json({ received_reports: result }))
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
 
+// Put attending incident
+// Parameters: -
+// Req: User id, report id
+// Returns: Message of the process
+router.put("/attend/", async (req, res) => {
+  let user_id = req.body.id;
+  let report_id = req.body.report_id;
+  //agregar ubicacion del reporte
+  // await User.findByIdAndUpdate(user_id, {
+  //   $push: {attending: user_id}
+  // }).then((user) => {}).catch((err) => res.status(500).json({ err: err.toString() }));
+  await Report.findByIdAndUpdate(report_id, {
+    $push: { attending: user_id },
+  })
+    .then((report) => res.status(200).json({ msg: "Atendiendo incidente" }))
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
+
+// Get attending locations
+// Parameters: Id of user
+// Req: -
+// Returns: Message of the process
+router.get("/attending_locations/:id", async (req, res) => {
+  let user_id = req.params.id;
+  await User.findById(user_id)
+    .then((user) =>
+      res.status(200).json({ attending_locations: user.attending_locations })
+    )
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
 
 module.exports = router;

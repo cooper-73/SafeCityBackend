@@ -16,8 +16,8 @@ const report = new Schema({
     },
     details: String,
     attending: {
-        type: Object,
-        default: null
+        type: Array,
+        default: []
     },
     location: {
         type: Object,

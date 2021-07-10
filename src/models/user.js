@@ -44,6 +44,10 @@ const user = new Schema({
         type: Array,
         default: []
         // Array with report_id created
+    },
+    attending_locations: {
+        type: Array,
+        default: []
     }
 });
 user.plugin(passportLocalMongoose)
