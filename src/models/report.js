@@ -7,7 +7,7 @@ const report = new Schema({
         required: true
     },
     incident: {
-        type: Object,
+        type: String,
         required: true
     },
     time: {
