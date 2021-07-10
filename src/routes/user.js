@@ -204,8 +204,9 @@ router.post("/request_new_password", async(req,res)=>{
   await User.findOne(
     {$or: [{dni:dni},{email:email}]}
   ).then((user)=> {
-    const {phone} = user
-    res.status(200).send(JSON.stringify(phone))
+    const {phone, _id} = user
+    console.log(phone,_id)
+    res.status(200).send(JSON.stringify({phone,_id}))
   })
   .catch((err)=>{
     res.status(400).send()
