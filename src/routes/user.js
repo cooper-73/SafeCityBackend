@@ -199,16 +199,43 @@ router.get("/attending_locations/:id", async (req, res) => {
 });
 
 
-router.post("/new_password", async(req,res)=>{
+router.post("/request_new_password", async(req,res)=>{
   const {dni , email} = req.body;
-  await User.find(
+  await User.findOne(
     {$or: [{dni:dni},{email:email}]}
   ).then((user)=> {
-    res.status(200).send(user.phone)
+    const {phone} = user
+    res.status(200).send(JSON.stringify(phone))
   })
   .catch((err)=>{
     res.status(400).send()
   })
+
 })
+
+router.post("/new_password",async(req,res)=>{
+  const {id ,password} = req.body;
+  await User.findById(id, (err,user)=>{
+    user.setPassword(password, (err)=>{
+      if(err){
+        res.status(400).send()
+      }
+      user.save()
+      res.status(200).send()
+    })
+    
+  })
+})
+/*
+yourSchemaName.findById(id, function(err, user) {
+  user.setPassword(req.body.password, function(err) {
+      if (err) //handle error
+      user.save(function(err) {
+          if (err) //handle error
+          else //handle success
+      });
+  });
+});
+*/
 
 module.exports = router;
