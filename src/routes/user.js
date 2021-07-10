@@ -198,4 +198,17 @@ router.get("/attending_locations/:id", async (req, res) => {
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
 
+
+router.post("/new_password", async(req,res)=>{
+  const {dni , email} = req.body;
+  await User.find(
+    {$or: [{dni:dni},{email:email}]}
+  ).then((user)=> {
+    res.status(200).send(user.phone)
+  })
+  .catch((err)=>{
+    res.status(400).send()
+  })
+})
+
 module.exports = router;
