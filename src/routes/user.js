@@ -6,7 +6,7 @@ const Report = require("../models/report");
 //require('../app')
 
 // const user = new Schema({
-//   name: {
+//   username: {
 //       type: String,
 //       required: true
 //   },
@@ -50,13 +50,13 @@ const Report = require("../models/report");
 
 /*
 Perform basic register
-Parameters: name,dni,phone,email,password
+Parameters: username,dni,phone,email,password
 Return: if is correct return code 200, else return 400; 
 */
 router.post("/register", (req, res) => {
-  const { name, dni, phone, email, password } = req.body;
+  const { username, dni, phone, email, password } = req.body;
   User.register(
-    new User({ name, dni, phone, email }),
+    new User({ username, dni, phone, email }),
     password,
     function (err, user) {
       if (err) {
@@ -72,7 +72,7 @@ router.post("/register", (req, res) => {
 });
 /* 
 Perform login
-Paramters:name, password
+Paramters:username, password
 if correct perform callback and return code 200 and all the user information
 else on error return by default code 401
 */

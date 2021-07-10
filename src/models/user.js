@@ -9,7 +9,7 @@ passportLocalMongoose   =   require('passport-local-mongoose');
 // }
 
 const user = new Schema({
-    name: {
+    username: {
         type: String,
         required: true
     },
