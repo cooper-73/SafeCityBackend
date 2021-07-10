@@ -123,6 +123,7 @@ router.post("/emergency_contacts/", async (req, res) => {
 
 // Get Emergency Contacts
 // Parameters: Id of user
+// Req: -
 // Returns: Array of emergency contacts of user
 router.get("/emergency_contacts/:id", async (req, res) => {
   let user_id = req.params.id;
