@@ -54,10 +54,10 @@ Parameters: username,dni,phone,email,password
 Return: if is correct return code 200, else return 400; 
 */
 router.post("/register", (req, res) => {
-  const {  dni, phone, email, password, name } = req.body;
+  const {  dni, phone, email, password, name, } = req.body;
   const username = email
   User.register(
-    new User({ username, dni, phone, name }),
+    new User({ username, dni, phone, name ,email}),
     password,
     function (err, user) {
       if (err) {
