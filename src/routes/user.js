@@ -90,7 +90,7 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 // Returns: Info of user
 router.get("/info/:id", async (req, res) => {
   let user_id = req.params.id;
-  await User.findOne({ _id: user_id }, "username email phone")
+  await User.findOne({ _id: user_id }, "name email phone")
     .then((result) => {
       res.status(200).json(result);
     })
