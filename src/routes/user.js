@@ -82,9 +82,24 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send(JSON.stringify(req.user));
 });
 
+
+// Get info of user
+// Parameters: Id of user
+// Req: -
+// Returns: Info of user
+router.get("/info/:id", async (req, res) => {
+  let user_id = req.params.id;
+  await User.findOne({ _id: user_id }, "username email phone")
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
+
+
 // Update User's Profile
 // Parameters: Id of user
-// Body: User's profile changes
+// Body: User's profile changes (username - email - phone)
 // Returns: Message of the process
 router.put("/profile/:id", async (req, res) => {
   let user_id = req.params.id;
