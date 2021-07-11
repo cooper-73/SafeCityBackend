@@ -14,7 +14,10 @@ const report = new Schema({
         type: Date,
         required: true
     },
-    details: String,
+    details: {
+      type: String,
+      default: null,
+    },
     attending: {
         type: Array,
         default: []
@@ -23,7 +26,7 @@ const report = new Schema({
         type: Object,
         required: true
     },
-    photos: {
+    fileURL: {
         type: Object,
         default: null
     },
@@ -31,9 +34,13 @@ const report = new Schema({
         type: Object,
         default: null
     },
-    videos: {
+    videosURL: {
         type: Object,
         default: null
+    },
+    public_id:{
+      type:String,
+      default: null
     }
 });
 
