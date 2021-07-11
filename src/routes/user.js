@@ -105,6 +105,20 @@ router.get("/info/:id", async (req, res) => {
 router.put("/profile/:id", async (req, res) => {
   let user_id = req.params.id;
   let new_profile_info = req.body;
+  let flag = false;
+  await User.findOne({phone: new_profile_info.phone}).then(result => {
+    if(result._id !== user_id) {
+      res.status(400).json({ msg: "Ya existe un perfil con este número" });
+      flag = true;
+    }
+  }).catch((err) => res.status(500).json({ err: err.toString() }));
+  await User.findOne({email: new_profile_info.email}).then(result => {
+    if(result._id !== user_id) {
+      res.status(400).json({ msg: "Ya existe un perfil con este correo electrónico" });
+      flag = true;
+    }
+  }).catch((err) => res.status(500).json({ err: err.toString() }));
+  if(flag)  return;
   await User.findByIdAndUpdate(user_id, new_profile_info)
     .then((result) => {
       res.status(200).json({ msg: "Perfil actualizado" });
