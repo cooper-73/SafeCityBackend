@@ -11,6 +11,11 @@ passportLocalMongoose   =   require('passport-local-mongoose');
 const user = new Schema({
     username: {
         type: String,
+        required: true,
+        unique: true
+    },
+    name: {
+        type: String,
         required: true
     },
     dni: {
@@ -23,11 +28,7 @@ const user = new Schema({
         required: true,
         unique: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
+
     currentLocation: {
         type: Object,
         default: null

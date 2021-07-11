@@ -54,9 +54,10 @@ Parameters: username,dni,phone,email,password
 Return: if is correct return code 200, else return 400; 
 */
 router.post("/register", (req, res) => {
-  const { username, dni, phone, email, password } = req.body;
+  const {  dni, phone, email, password, name } = req.body;
+  const username = email
   User.register(
-    new User({ username, dni, phone, email }),
+    new User({ username, dni, phone, name }),
     password,
     function (err, user) {
       if (err) {
@@ -217,7 +218,7 @@ router.get("/attending_locations/:id", async (req, res) => {
 router.post("/request_new_password", async(req,res)=>{
   const {dni , email} = req.body;
   await User.findOne(
-    {$or: [{dni:dni},{email:email}]}
+    {$or: [{dni:dni},{username:email}]}
   ).then((user)=> {
     const {phone, _id} = user
     console.log(phone,_id)
