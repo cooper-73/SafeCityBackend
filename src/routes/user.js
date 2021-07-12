@@ -108,7 +108,8 @@ router.put("/profile/:id", async (req, res) => {
   let flag = false;
   await User.findOne({phone: new_profile_info.phone}).then(result => {
     if(result === null) return;
-    if(result._id !== user_id) {
+    if(result._id != user_id) {
+      console.log(result._id, user_id);
       res.status(409).json({ msg: "Ya existe un perfil con este número" });
       flag = true;
     }
@@ -116,14 +117,15 @@ router.put("/profile/:id", async (req, res) => {
   if(!flag) {
     await User.findOne({email: new_profile_info.email}).then(result => {
       if(result === null) return;
-      if(result._id !== user_id) {
+      if(result._id != user_id) {
+        console.log(result._id, user_id);
         res.status(409).json({ msg: "Ya existe un perfil con este correo electrónico" });
         flag = true;
       }
     }).catch((err) => res.status(500).json({ err: err.toString() }));
   }
   if(!flag) {
-    await User.findByIdAndUpdate(user_id, {new_profile_info, username: new_profile_info.email})
+    await User.findByIdAndUpdate(user_id, {...new_profile_info, username: new_profile_info.email})
     .then((result) => {
       res.status(200).json({ msg: "Perfil actualizado" });
     })
