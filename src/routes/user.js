@@ -54,10 +54,10 @@ Parameters: username,dni,phone,email,password
 Return: if is correct return code 200, else return 400;
 */
 router.post("/register", (req, res) => {
-  const {  dni, phone, email, password, name, } = req.body;
-  const username = email
+  const { dni, phone, email, password, name } = req.body;
+  const username = email;
   User.register(
-    new User({ username, dni, phone, name ,email}),
+    new User({ username, dni, phone, name, email }),
     password,
     function (err, user) {
       if (err) {
@@ -83,7 +83,6 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send(JSON.stringify(req.user));
 });
 
-
 // Get info of user
 // Parameters: Id of user
 // Req: -
@@ -97,7 +96,6 @@ router.get("/info/:id", async (req, res) => {
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
 
-
 // Update User's Profile
 // Parameters: Id of user
 // Body: User's profile changes (username - email - phone)
@@ -106,30 +104,39 @@ router.put("/profile/:id", async (req, res) => {
   let user_id = req.params.id;
   let new_profile_info = req.body;
   let flag = false;
-  await User.findOne({phone: new_profile_info.phone}).then(result => {
-    if(result === null) return;
-    if(result._id != user_id) {
-      console.log(result._id, user_id);
-      res.status(200).json({ err: "Ya existe un perfil con este número" });
-      flag = true;
-    }
-  }).catch((err) => res.status(500).json({ err: err.toString() }));
-  if(!flag) {
-    await User.findOne({email: new_profile_info.email}).then(result => {
-      if(result === null) return;
-      if(result._id != user_id) {
+  await User.findOne({ phone: new_profile_info.phone })
+    .then((result) => {
+      if (result === null) return;
+      if (result._id != user_id) {
         console.log(result._id, user_id);
-        res.status(200).json({ err: "Ya existe un perfil con este correo electrónico" });
+        res.status(200).json({ err: "Ya existe un perfil con este número" });
         flag = true;
       }
-    }).catch((err) => res.status(500).json({ err: err.toString() }));
-  }
-  if(!flag) {
-    await User.findByIdAndUpdate(user_id, {...new_profile_info, username: new_profile_info.email})
-    .then((result) => {
-      res.status(200).json({ msg: "Perfil actualizado" });
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
+  if (!flag) {
+    await User.findOne({ email: new_profile_info.email })
+      .then((result) => {
+        if (result === null) return;
+        if (result._id != user_id) {
+          console.log(result._id, user_id);
+          res
+            .status(200)
+            .json({ err: "Ya existe un perfil con este correo electrónico" });
+          flag = true;
+        }
+      })
+      .catch((err) => res.status(500).json({ err: err.toString() }));
+  }
+  if (!flag) {
+    await User.findByIdAndUpdate(user_id, {
+      ...new_profile_info,
+      username: new_profile_info.email,
+    })
+      .then((result) => {
+        res.status(200).json({ msg: "Perfil actualizado" });
+      })
+      .catch((err) => res.status(500).json({ err: err.toString() }));
   }
 });
 
@@ -143,21 +150,25 @@ router.post("/emergency_contacts/", async (req, res) => {
   let contact_phone = req.body.contact_phone;
   let contacts = [];
   let repeated_phone = false;
-  await User.findById(user_id).then(user => {
-    contacts = user.emergencyContacts
-    let contacts_repeated = contacts.filter(contact => contact.phone === contact_phone)
-    if(contacts_repeated.length != 0) {
-      res.status(300).json({err: "Ya tienes un contacto con este número"})
-      repeated_phone = true;
-    }
-  }).catch((err) => res.status(500).json({ err: err.toString() }));
-  if(repeated_phone)  return;
+  await User.findById(user_id)
+    .then((user) => {
+      contacts = user.emergencyContacts;
+      let contacts_repeated = contacts.filter(
+        (contact) => contact.phone === contact_phone
+      );
+      if (contacts_repeated.length != 0) {
+        res.status(300).json({ err: "Ya tienes un contacto con este número" });
+        repeated_phone = true;
+      }
+    })
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+  if (repeated_phone) return;
   let newContact = {
     name: contact_name,
-    phone: contact_phone
+    phone: contact_phone,
   };
   await User.findByIdAndUpdate(user_id, {
-    $push: { emergencyContacts: newContact },
+    $push: { emergencyContacts: {$each: [newContact], $sort: { name: 1 }} },
   })
     .then((user) => res.status(200).json({ msg: "Contacto agregado" }))
     .catch((err) => res.status(500).json({ err: err.toString() }));
@@ -240,35 +251,31 @@ router.get("/attending_locations/:id", async (req, res) => {
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
 
-
-router.post("/request_new_password", async(req,res)=>{
-  const {dni , email} = req.body;
-  await User.findOne(
-    {$or: [{dni:dni},{username:email}]}
-  ).then((user)=> {
-    const {phone, _id} = user
-    console.log(phone,_id)
-    res.status(200).send(JSON.stringify({phone,_id}))
-  })
-  .catch((err)=>{
-    res.status(400).send()
-  })
-
-})
-
-router.post("/new_password",async(req,res)=>{
-  const {id ,password} = req.body;
-  await User.findById(id, (err,user)=>{
-    user.setPassword(password, (err)=>{
-      if(err){
-        res.status(400).send()
-      }
-      user.save()
-      res.status(200).send()
+router.post("/request_new_password", async (req, res) => {
+  const { dni, email } = req.body;
+  await User.findOne({ $or: [{ dni: dni }, { username: email }] })
+    .then((user) => {
+      const { phone, _id } = user;
+      console.log(phone, _id);
+      res.status(200).send(JSON.stringify({ phone, _id }));
     })
+    .catch((err) => {
+      res.status(400).send();
+    });
+});
 
-  })
-})
+router.post("/new_password", async (req, res) => {
+  const { id, password } = req.body;
+  await User.findById(id, (err, user) => {
+    user.setPassword(password, (err) => {
+      if (err) {
+        res.status(400).send();
+      }
+      user.save();
+      res.status(200).send();
+    });
+  });
+});
 /*
 yourSchemaName.findById(id, function(err, user) {
   user.setPassword(req.body.password, function(err) {
