@@ -51,7 +51,7 @@ const Report = require("../models/report");
 /*
 Perform basic register
 Parameters: username,dni,phone,email,password
-Return: if is correct return code 200, else return 400; 
+Return: if is correct return code 200, else return 400;
 */
 router.post("/register", (req, res) => {
   const {  dni, phone, email, password, name, } = req.body;
@@ -71,7 +71,7 @@ router.post("/register", (req, res) => {
     }
   );
 });
-/* 
+/*
 Perform login
 Paramters:username, password
 if correct perform callback and return code 200 and all the user information
@@ -255,7 +255,7 @@ router.post("/new_password",async(req,res)=>{
       user.save()
       res.status(200).send()
     })
-    
+
   })
 })
 /*
