@@ -141,16 +141,10 @@ router.post("/emergency_contacts/", async (req, res) => {
   let user_id = req.body.id;
   let contact_name = req.body.contact_name;
   let contact_phone = req.body.contact_phone;
-  let newContact;
-  await User.findOne({ phone: contact_name }, "photo")
-    .then((contact_photo) => {
-      newContact = {
-        name: contact_name,
-        phone: contact_phone,
-        photo: contact_photo,
-      };
-    })
-    .catch((err) => res.status(500).json({ err: err.toString() }));
+  let newContact = {
+    name: contact_name,
+    phone: contact_phone
+  };
   await User.findByIdAndUpdate(user_id, {
     $push: { emergencyContacts: newContact },
   })
