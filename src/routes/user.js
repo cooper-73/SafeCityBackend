@@ -123,7 +123,7 @@ router.put("/profile/:id", async (req, res) => {
     }).catch((err) => res.status(500).json({ err: err.toString() }));
   }
   if(!flag) {
-    await User.findByIdAndUpdate(user_id, new_profile_info)
+    await User.findByIdAndUpdate(user_id, {new_profile_info, username: new_profile_info.email})
     .then((result) => {
       res.status(200).json({ msg: "Perfil actualizado" });
     })
