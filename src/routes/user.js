@@ -110,7 +110,7 @@ router.put("/profile/:id", async (req, res) => {
     if(result === null) return;
     if(result._id != user_id) {
       console.log(result._id, user_id);
-      res.status(409).json({ msg: "Ya existe un perfil con este número" });
+      res.status(200).json({ err: "Ya existe un perfil con este número" });
       flag = true;
     }
   }).catch((err) => res.status(500).json({ err: err.toString() }));
@@ -119,7 +119,7 @@ router.put("/profile/:id", async (req, res) => {
       if(result === null) return;
       if(result._id != user_id) {
         console.log(result._id, user_id);
-        res.status(409).json({ msg: "Ya existe un perfil con este correo electrónico" });
+        res.status(200).json({ err: "Ya existe un perfil con este correo electrónico" });
         flag = true;
       }
     }).catch((err) => res.status(500).json({ err: err.toString() }));
