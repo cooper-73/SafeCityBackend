@@ -107,6 +107,7 @@ router.put("/profile/:id", async (req, res) => {
   let new_profile_info = req.body;
   let flag = false;
   await User.findOne({phone: new_profile_info.phone}).then(result => {
+    if(result === null) return;
     if(result._id !== user_id) {
       res.status(409).json({ msg: "Ya existe un perfil con este número" });
       flag = true;
@@ -114,6 +115,7 @@ router.put("/profile/:id", async (req, res) => {
   }).catch((err) => res.status(500).json({ err: err.toString() }));
   if(!flag) {
     await User.findOne({email: new_profile_info.email}).then(result => {
+      if(result === null) return;
       if(result._id !== user_id) {
         res.status(409).json({ msg: "Ya existe un perfil con este correo electrónico" });
         flag = true;
