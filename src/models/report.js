@@ -20,7 +20,7 @@ const report = new Schema({
     },
     attending: {
         type: Array,
-        default: []
+        default: false
     },
     location: {
         type: Object,
@@ -30,7 +30,7 @@ const report = new Schema({
         type: Object,
         default: null
     },
-    voiceMessages: {
+    author: {
         type: Object,
         default: null
     },
@@ -41,6 +41,10 @@ const report = new Schema({
     public_id:{
       type:String,
       default: null
+    },
+    dateMs:{
+      type: Object,
+      default:null
     }
 });
 
