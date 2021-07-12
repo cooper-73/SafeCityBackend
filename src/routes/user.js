@@ -141,6 +141,16 @@ router.post("/emergency_contacts/", async (req, res) => {
   let user_id = req.body.id;
   let contact_name = req.body.contact_name;
   let contact_phone = req.body.contact_phone;
+  let contacts = [];
+  let repeated_phone = false;
+  await User.findById(user_id).then(user => {
+    contacts = user.emergencyContacts
+    let contacts_repeated = contacts.filter(contact => contact.phone == contact_phone)
+    if(contacts_repeated.length() != 0) {
+      res.status(300).json({err: "Ya existe un contacto con este número"})
+    }
+  }).catch((err) => res.status(500).json({ err: err.toString() }));
+  if(repeated_phone)  return;
   let newContact = {
     name: contact_name,
     phone: contact_phone
