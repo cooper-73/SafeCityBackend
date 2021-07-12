@@ -51,12 +51,13 @@ const Report = require("../models/report");
 /*
 Perform basic register
 Parameters: username,dni,phone,email,password
-Return: if is correct return code 200, else return 400; 
+Return: if is correct return code 200, else return 400;
 */
 router.post("/register", (req, res) => {
-  const { username, dni, phone, email, password } = req.body;
+  const {  dni, phone, email, password, name, } = req.body;
+  const username = email
   User.register(
-    new User({ username, dni, phone, email }),
+    new User({ username, dni, phone, name ,email}),
     password,
     function (err, user) {
       if (err) {
@@ -70,7 +71,7 @@ router.post("/register", (req, res) => {
     }
   );
 });
-/* 
+/*
 Perform login
 Paramters:username, password
 if correct perform callback and return code 200 and all the user information
@@ -82,18 +83,54 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send(JSON.stringify(req.user));
 });
 
+
+// Get info of user
+// Parameters: Id of user
+// Req: -
+// Returns: Info of user
+router.get("/info/:id", async (req, res) => {
+  let user_id = req.params.id;
+  await User.findOne({ _id: user_id }, "name email phone")
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => res.status(500).json({ err: err.toString() }));
+});
+
+
 // Update User's Profile
 // Parameters: Id of user
-// Body: User's profile changes
+// Body: User's profile changes (username - email - phone)
 // Returns: Message of the process
 router.put("/profile/:id", async (req, res) => {
   let user_id = req.params.id;
   let new_profile_info = req.body;
-  await User.findByIdAndUpdate(user_id, new_profile_info)
+  let flag = false;
+  await User.findOne({phone: new_profile_info.phone}).then(result => {
+    if(result === null) return;
+    if(result._id != user_id) {
+      console.log(result._id, user_id);
+      res.status(200).json({ err: "Ya existe un perfil con este número" });
+      flag = true;
+    }
+  }).catch((err) => res.status(500).json({ err: err.toString() }));
+  if(!flag) {
+    await User.findOne({email: new_profile_info.email}).then(result => {
+      if(result === null) return;
+      if(result._id != user_id) {
+        console.log(result._id, user_id);
+        res.status(200).json({ err: "Ya existe un perfil con este correo electrónico" });
+        flag = true;
+      }
+    }).catch((err) => res.status(500).json({ err: err.toString() }));
+  }
+  if(!flag) {
+    await User.findByIdAndUpdate(user_id, {...new_profile_info, username: new_profile_info.email})
     .then((result) => {
       res.status(200).json({ msg: "Perfil actualizado" });
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
+  }
 });
 
 // Post Emergency Contacts
@@ -202,7 +239,7 @@ router.get("/attending_locations/:id", async (req, res) => {
 router.post("/request_new_password", async(req,res)=>{
   const {dni , email} = req.body;
   await User.findOne(
-    {$or: [{dni:dni},{email:email}]}
+    {$or: [{dni:dni},{username:email}]}
   ).then((user)=> {
     const {phone, _id} = user
     console.log(phone,_id)
@@ -224,7 +261,7 @@ router.post("/new_password",async(req,res)=>{
       user.save()
       res.status(200).send()
     })
-    
+
   })
 })
 /*

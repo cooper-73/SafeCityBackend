@@ -8,9 +8,9 @@ const cloudinary = require('cloudinary');
 //   api_secret: 'Nk82bw4rUBfOBp7geEVVgZNc1rc',
 // });
 cloudinary.config({
-  cloud_name: 'dun28bky1',
-  api_key: '872236769338254',
-  api_secret: 'Nk82bw4rUBfOBp7geEVVgZNc1rc',
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });
 
 const fs = require('fs-extra');
