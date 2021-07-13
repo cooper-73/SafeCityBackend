@@ -12,7 +12,7 @@ const review = new Schema({
         required: True
     }
 })
-*/ 
+*/
 
 router.post("/new", async(req,res)=>{
     const {calification, content} = req.body
