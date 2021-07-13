@@ -67,33 +67,36 @@ router.get('/:id', async (req, res) => {
 
 router.get('/duration/:time', async (req, res) => {
   const time = req.params.time;
+console.log(time);
+  const timeNow =  Date.now();
 
-  const dateNow = Date.now();
-
-  const dateIni = dateNow - time * 3600000 ;
+  const timeIni = timeNow - time * 86400000 ;
 
   const data = [];
 
-  console.log("fecha inicial:",dateIni);
-
   const incident = await Incident.find()
                                   .catch((err) => res.status(500).json({ err: err.toString() }));
+
   incident.forEach(element => {
 
     if(element.dateMs != null){
-      if(dateIni < element.dateMs && element.dateMs <dateNow){
 
-        const timeElapsed = (dateNow - element.dateMs)/3600000;
-        data.push( {victim: element.victim,
+      if(timeIni <= element.dateMs ){
+
+        const daysAgo = (timeNow - element.dateMs)/86400000;
+        // console.log(element);
+        data.push( {id : element._id,
+                  victim: element.victim,
                   incident:element.incident,
                   details:element.details,
                   location:element.location,
                   fileURL:element.fileURL,
-                  timeElapsed:timeElapsed});
+                  daysAgo:daysAgo});
       }
     }
   });
-  res.status(200).send(JSON.stringify(data));
+
+  res.send(data.reverse());
 });
 
 module.exports = router;
