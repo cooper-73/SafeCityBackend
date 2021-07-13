@@ -189,16 +189,16 @@ router.get("/emergency_contacts/:id", async (req, res) => {
 
 // Delete Emergency Contact
 // Parameters: Id of user
-// Body: Phone of emergency contact to be dropped
+// Body: Phones of emergency contacts to be dropped
 // Returns: Message of the process
 router.put("/delete_emergency_contacts/:id", async (req, res) => {
   let user_id = req.params.id;
-  let contact_phone = req.body.contact_phone;
+  let contact_phones = req.body.contact_phones;
   await User.findByIdAndUpdate(user_id, {
-    $pull: { emergencyContacts: { phone: contact_phone } },
+    $pull: { emergencyContacts: { phone: {$in: contact_phones} } },
   })
     .then((result) => {
-      res.status(200).json({ msg: "Contacto eliminado" });
+      res.status(200).json({ msg: "Contactos eliminados" });
     })
     .catch((err) => res.status(500).json({ err: err.toString() }));
 });
