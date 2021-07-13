@@ -15,6 +15,7 @@ router.post('/form', async (req, res) => {
   const location = {latitude, longitude};
   const result = await cloudinary.v2.uploader.upload(req.file.path);
 
+console.log("1");
   const aux = await User.findById(id, function (err, result){
     if(err){
       console.log("3");
@@ -25,6 +26,7 @@ router.post('/form', async (req, res) => {
     }
   })
   const{_id, emergencyContacts} = aux;
+console.log("2");
   author = {_id, emergencyContacts};
 
   const newReport = new Incident({
