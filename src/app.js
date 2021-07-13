@@ -24,6 +24,7 @@ const incidentRouter = require('./routes/incident');
 const reportRouter = require('./routes/report');
 const userRouter = require('./routes/user');
 const reportIncidentRouter = require('./routes/reportIncident');
+const reviewRouter = require('./routes/review');
 
 //PassportConfiguracion
 passport.serializeUser(user.serializeUser())
@@ -56,6 +57,7 @@ app.use('/incident', incidentRouter);
 app.use('/report', reportRouter);
 app.use('/user', userRouter);
 app.use('/report-incident', reportIncidentRouter);
+app.use('/review',reviewRouter)
 
 //Start the server
 app.listen(app.get('port'), () => {
