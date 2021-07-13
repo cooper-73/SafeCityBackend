@@ -35,7 +35,7 @@ console.log("2");
     details,
     location,
     author,
-    fileURL: result.url,
+    fileURL: result.secure_url,
     public_id: result.public_id,
     time: result.created_at,
     dateMs: result.original_filename,
