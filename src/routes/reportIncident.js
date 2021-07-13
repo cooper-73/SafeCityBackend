@@ -2,11 +2,6 @@ const router = require("express").Router();
 const Incident = require("../models/report");
 const User = require("../models/user");
 const cloudinary = require('cloudinary');
-// cloudinary.config({
-//   cloud_name: 'dun28bky1',
-//   api_key: '872236769338254',
-//   api_secret: 'Nk82bw4rUBfOBp7geEVVgZNc1rc',
-// });
 cloudinary.config({
   cloud_name: 'dun28bky1',
   api_key: '872236769338254',
@@ -22,13 +17,14 @@ router.post('/form', async (req, res) => {
 
   const aux = await User.findById(id, function (err, result){
     if(err){
+      console.log("3");
       res.status(500).json({ err: err.toString() });
     }else{
+      console.log(result);
       return result;
     }
   })
   const{_id, emergencyContacts} = aux;
-
   author = {_id, emergencyContacts};
 
   const newReport = new Incident({
@@ -45,14 +41,14 @@ router.post('/form', async (req, res) => {
 
   await newReport.save();
   await fs.unlink(req.file.path);
-  res.send('OK');
+  res.status(200).send();
 
 });
 
 router.get('/', async (req, res) => {
   const incident = await Incident.find();
   console.log(incident);
-  res.send(incident);
+  res.status(200).send(JSON.stringify(incident));
 
 });
 
@@ -62,8 +58,7 @@ router.get('/:id', async (req, res) => {
     if(err){
       res.status(500).json({ err: err.toString() });
     }else{
-      console.log(result);
-      res.send(result);
+      res.status(200).send(JSON.stringify(result));
     }
   })
 });
@@ -96,7 +91,7 @@ router.get('/duration/:time', async (req, res) => {
       }
     }
   });
-  res.send(data);
+  res.status(200).send(JSON.stringify(data));
 });
 
 module.exports = router;
