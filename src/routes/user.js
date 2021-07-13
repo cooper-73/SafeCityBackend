@@ -56,13 +56,19 @@ Return: if is correct return code 200, else return 400;
 router.post("/register", (req, res) => {
   const { dni, phone, email, password, name } = req.body;
   const username = email;
+  console.log("entre aca")
   User.register(
     new User({ username, dni, phone, name, email }),
     password,
     function (err, user) {
       if (err) {
-        console.log(err);
-        res.status(400).send();
+        if(err.message == "A user with the given username is already registered"){
+          res.status(403).send();
+        }
+        else{
+          console.log(err);
+          res.status(400).send();
+        }
       } else {
         passport.authenticate("local");
         console.log("usuario registrado");
