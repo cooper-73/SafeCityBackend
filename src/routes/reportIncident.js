@@ -43,14 +43,14 @@ console.log("2");
 
   await newReport.save();
   await fs.unlink(req.file.path);
-  res.send('OK');
+  res.status(200).send();
 
 });
 
 router.get('/', async (req, res) => {
   const incident = await Incident.find();
   console.log(incident);
-  res.send(incident);
+  res.status(200).send(JSON.stringify(incident));
 
 });
 
@@ -60,8 +60,7 @@ router.get('/:id', async (req, res) => {
     if(err){
       res.status(500).json({ err: err.toString() });
     }else{
-      console.log(result);
-      res.send(result);
+      res.status(200).send(JSON.stringify(result));
     }
   })
 });
@@ -94,7 +93,7 @@ router.get('/duration/:time', async (req, res) => {
       }
     }
   });
-  res.send(data);
+  res.status(200).send(JSON.stringify(data));
 });
 
 module.exports = router;
