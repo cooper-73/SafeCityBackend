@@ -3,10 +3,17 @@ const Incident = require("../models/report");
 const User = require("../models/user");
 const cloudinary = require('cloudinary');
 cloudinary.config({
-  cloud_name: 'dun28bky1',
-  api_key: '872236769338254',
-  api_secret: 'Nk82bw4rUBfOBp7geEVVgZNc1rc',
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });
+
+const Vonage = require('@vonage/server-sdk')
+
+const vonage = new Vonage({
+  apiKey: process.env.API_KEY_V,
+  apiSecret: process.env.API_SECRET,
+})
 
 const fs = require('fs-extra');
 
@@ -99,6 +106,45 @@ router.get('/duration/:time', async (req, res) => {
   });
 
   res.status(200).json({recentReports: data.reverse()});
+});
+
+router.post('/message/:id', async (req, res) => {
+  const id = req.params.id;
+
+  const { message } = req.body;
+
+  const aux = await User.findById(id, function (err, result){
+    if(err){
+      res.status(500).json({ err: err.toString() });
+    }else{
+      return result;
+    }
+  });
+
+  const{emergencyContacts} = aux;
+  //Envio la url maps
+
+  emergencyContacts.forEach(element => {
+
+    const from = "Vonage APIs"
+    const to = `51${element.phone}`
+    const text = message
+
+    if (element != null){
+      vonage.message.sendSms(from, to, text, (err, responseData) => {
+          if (err) {
+              console.log(err);
+          } else {
+              if(responseData.messages[0]['status'] === "0") {
+                  console.log("Message sent successfully.");
+              } else {
+                  console.log(`Message failed with error: ${responseData.messages[0]['error-text']}`);
+              }
+          }
+      })}
+  });
+
+  res.status(200).send();
 });
 
 module.exports = router;
