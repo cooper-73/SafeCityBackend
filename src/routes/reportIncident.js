@@ -90,8 +90,8 @@ router.get('/duration/:time', async (req, res) => {
                   victim: element.victim,
                   incident:element.incident,
                   details:element.details,
-                  location_latitude:element.location.latitude,
-                  location_longitude:element.location.longitude,
+                  locationLatitude:element.location.latitude,
+                  locationLongitude:element.location.longitude,
                   fileURL:element.fileURL,
                   daysAgo:daysAgo});
       }
