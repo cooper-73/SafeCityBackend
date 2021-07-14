@@ -97,7 +97,7 @@ router.get('/duration/:time', async (req, res) => {
     }
   });
 
-  res.status(200).json({recent_reports: data.reverse()});
+  res.status(200).json({recentReports: data.reverse()});
 });
 
 module.exports = router;
