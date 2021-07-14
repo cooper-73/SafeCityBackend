@@ -67,7 +67,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/duration/:time', async (req, res) => {
   const time = req.params.time;
-console.log(time);
+  console.log(time);
   const timeNow =  Date.now();
 
   const timeIni = timeNow - time * 86400000 ;
@@ -86,6 +86,7 @@ console.log(time);
         const daysAgo = (timeNow - element.dateMs)/86400000;
         // console.log(element);
         data.push( {id : element._id,
+                  victimId: element.author._id,
                   victim: element.victim,
                   incident:element.incident,
                   details:element.details,
@@ -96,7 +97,7 @@ console.log(time);
     }
   });
 
-  res.send(data.reverse());
+  res.status(200).send(data.reverse());
 });
 
 module.exports = router;
