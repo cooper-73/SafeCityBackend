@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Incident = require("../models/report");
 const User = require("../models/user");
+
 const cloudinary = require('cloudinary');
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -112,6 +113,13 @@ router.post('/message/:id', async (req, res) => {
   const id = req.params.id;
 
   const { message } = req.body;
+  var auxLoc = new Array();
+  auxLoc = message.split("=")[1].split(",")
+  const latitude = auxLoc[0];
+  const longitude = auxLoc[1];
+  const location = { latitude, longitude};
+
+  const time =  new Date();
 
   const aux = await User.findById(id, function (err, result){
     if(err){
@@ -121,7 +129,8 @@ router.post('/message/:id', async (req, res) => {
     }
   });
 
-  const{emergencyContacts} = aux;
+
+  const{_id, emergencyContacts, name} = aux;
   //Envio la url maps
 
   emergencyContacts.forEach(element => {
@@ -144,6 +153,17 @@ router.post('/message/:id', async (req, res) => {
       })}
   });
 
+  //guardar la incidencia
+  const newReport = new Incident({
+    victim : name,
+    incident : "Pedido de ayuda",
+    details : `${name} presionó el boton de SOS de la aplicación`,
+    location,
+    author: _id,
+    time
+  });
+
+  await newReport.save();
   res.status(200).send();
 });
 
